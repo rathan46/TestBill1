@@ -1,0 +1,240 @@
+<html>
+<head>
+    <style>
+		body {
+			font-family: Arial, sans-serif;
+			margin: 0;
+			padding: 0;
+			display: flex;
+			justify-content: center;
+				align-items: center;
+			height: 100vh;
+			background-color: #f0f0f0;
+		}
+		.container {
+			width: 430px;
+			padding: 20px;
+			background-color: #fff;
+			border-radius: 8px;
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+		}
+		input[type="text"] {
+			width: 125px;
+			padding: 5px;
+			margin-bottom: 10px;
+		}
+		input[type="number"] {
+			width: 125px;
+			padding: 5px;
+			margin-bottom: 10px;
+		}
+		input[type="button"] {
+			padding: 8px 16px;
+			margin-right: 10px;
+			font-size: 16px;
+			cursor: pointer;
+		}
+		#details {
+			margin-bottom: 20px;
+		}
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+        }
+    </style>
+    <script>
+        var customerName = "";
+        var customerPhone = "";
+        var items = [];
+        var grandTotal = 0;
+
+        function addItem() {
+            var itemName = document.getElementById("itemName").value;
+            var itemQuantity = document.getElementById("itemQuantity").value;
+            var itemPrice = document.getElementById("itemPrice").value;
+
+            if (itemName == "" || itemQuantity == "" || itemPrice == "") {
+                alert("Please enter all the item details.");
+                return;
+            }
+            if (isNaN(itemQuantity) || isNaN(itemPrice)) {
+                alert("Please enter valid numbers for item quantity and item price.");
+                return;
+            }
+
+            var itemTotal = itemQuantity * itemPrice;
+
+            var item = {
+                name: itemName,
+                quantity: itemQuantity,
+                price: itemPrice,
+                total: itemTotal
+            };
+
+            items.push(item);
+
+            grandTotal += itemTotal;
+
+            document.getElementById("itemName").value = "";
+            document.getElementById("itemQuantity").value = "";
+            document.getElementById("itemPrice").value = "";
+
+            alert("Item added successfully.");
+        }
+
+        function finish() {
+            customerName = document.getElementById("customerName").value;
+            customerPhone = document.getElementById("customerPhone").value;
+
+            if (customerName == "" || customerPhone == "") {
+                alert("Please enter the customer name and phone number.");
+                return;
+            }
+            if (isNaN(customerPhone)) {
+                alert("Please enter a valid phone number.");
+                return;
+            }
+
+            document.getElementById("inputSection").style.display = "none";
+            document.getElementById("outputSection").style.display = "block";
+
+
+            document.getElementById("outputCustomerName").innerHTML = customerName;
+            document.getElementById("outputCustomerPhone").innerHTML = customerPhone;
+
+            var table = document.createElement("table");
+
+            var headerRow = document.createElement("tr");
+            var headerName = document.createElement("th");
+            headerName.innerHTML = "Item Name";
+            var headerQuantity = document.createElement("th");
+            headerQuantity.innerHTML = "Item Quantity";
+            var headerPrice = document.createElement("th");
+            headerPrice.innerHTML = "Item Price";
+            var headerTotal = document.createElement("th");
+            headerTotal.innerHTML = "Item Total";
+            headerRow.appendChild(headerName);
+            headerRow.appendChild(headerQuantity);
+            headerRow.appendChild(headerPrice);
+            headerRow.appendChild(headerTotal);
+
+            table.appendChild(headerRow);
+
+            for (var i = 0; i < items.length; i++) {
+                var item = items[i];
+                var itemRow = document.createElement("tr");
+                var itemName = document.createElement("td");
+                itemName.innerHTML = item.name;
+                var itemQuantity = document.createElement("td");
+                itemQuantity.innerHTML = item.quantity;
+                var itemPrice = document.createElement("td");
+                itemPrice.innerHTML = item.price;
+                var itemTotal = document.createElement("td");
+                itemTotal.innerHTML = item.total;
+                itemRow.appendChild(itemName);
+                itemRow.appendChild(itemQuantity);
+                itemRow.appendChild(itemPrice);
+                itemRow.appendChild(itemTotal);
+
+                table.appendChild(itemRow);
+            }
+
+            var footerRow = document.createElement("tr");
+            var footerLabel = document.createElement("td");
+            footerLabel.innerHTML = "Grand Total";
+            footerLabel.colSpan = 3;
+            footerLabel.style.textAlign = "right";
+            var footerTotal = document.createElement("td");
+            footerTotal.innerHTML = grandTotal;
+            footerRow.appendChild(footerLabel);
+            footerRow.appendChild(footerTotal);
+
+            table.appendChild(footerRow);
+
+            document.getElementById("outputTable").appendChild(table);
+        }
+
+        function cancel() {
+            var confirmCancel = confirm("Are you sure you want to cancel the input and clear the data?");
+            if (confirmCancel) {
+                customerName = "";
+                customerPhone = "";
+                items = [];
+                grandTotal = 0;
+
+                document.getElementById("customerName").value = "";
+                document.getElementById("customerPhone").value = "";
+                document.getElementById("itemName").value = "";
+                document.getElementById("itemQuantity").value = "";
+                document.getElementById("itemPrice").value = "";
+
+                document.getElementById("outputSection").style.display = "none";
+                document.getElementById("inputSection").style.display = "block";
+
+                var table = document.getElementById("outputTable").firstChild;
+                if (table) {
+                    document.getElementById("outputTable").removeChild(table);
+                }
+            }
+        }
+
+        function printPage() {
+            var originalTitle = document.title;
+            var originalBody = document.body.innerHTML;
+
+            document.title = "Customer Invoice";
+            document.body.innerHTML = document.getElementById("outputSection").innerHTML;
+
+            window.print();
+
+            document.title = originalTitle;
+            document.body.innerHTML = originalBody;
+        }
+    </script>
+</head>
+<body>
+	<div class="container">
+		<div id="inputSection">
+			<h1>Enter the details</h1>
+			<form>
+				<p>
+					<input type="text" id="customerName" placeholder="Customer Name">
+				</p>
+				<p>
+					<input type="text" id="customerPhone" placeholder="Customer Phone">
+				</p>
+				<p>
+					<input type="text" id="itemName" placeholder="Item Name">
+					<input type="text" id="itemQuantity" placeholder="Quantity(in Kgs)">
+					<input type="text" id="itemPrice" placeholder="Price(in ₹)">
+				</p>	
+				<p>
+					<button type="button" onclick="addItem()">Add</button>
+					<button type="button" onclick="finish()">Finish</button>
+					<button type="button" onclick="cancel()">Cancel</button>
+				</p>
+			</form>
+		</div>
+	</div>
+
+    <div class="container" id="outputSection" style="display: none;">
+		<center><h1>PRABHU</h1></center>
+		<td><h5>PURCHASE BILL</h5><h4>Customer Invoice</h4><td>
+        <p>
+            <b>Customer Name:</b> <span id="outputCustomerName"></span>
+        </p>
+        <p>
+            <b>Customer Phone:</b> <span id="outputCustomerPhone"></span>
+        </p>
+        <div id="outputTable"></div>
+		<center><h6>FOR ANY QUERY CALL</h6></center>
+		<center><h6>9632715966,9972410561</h6></center>
+        <center><p>
+            <button type="button" onclick="printPage()">Print</button>
+        </p></center>
+    </div>
+</body>
+</html>
